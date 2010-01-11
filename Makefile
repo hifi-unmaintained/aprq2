@@ -12,11 +12,11 @@ BUILD_GLX=YES		# X11 GLX client
 BUILD_X11=NO		# X11 software client
 BUILD_GAME=YES		# Build game library
 BUILD_EVDEV=NO		# Build evdev mouse input support
-BUILD_XMMS=YES		# Buildin xmms remote commands
+BUILD_XMMS=NO		# Buildin xmms remote commands
 BUILD_MPD=NO		# Buildin mpd remote commands, cant use with BUILD_XMMS
-BUILD_SDLSOUND=NO	# Using sdl for sounds
-BUILD_SDL=NO		# Using sdl for keyboard/mouse/windows for both sw/gl
-BUILD_HTTP=NO		# Build support for http downloads. You need libcurl.
+BUILD_SDLSOUND=YES	# Using sdl for sounds
+BUILD_SDL=YES		# Using sdl for keyboard/mouse/windows for both sw/gl
+BUILD_HTTP=YES		# Build support for http downloads. You need libcurl.
 BUILD_OPENAL=YES	# Build support for openAL sounds
 #--------------------------------------------------------
 
