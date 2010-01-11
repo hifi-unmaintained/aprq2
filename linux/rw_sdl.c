@@ -108,6 +108,21 @@ void IN_MouseEvent (void)
 	mouse_oldbuttonstate = mouse_buttonstate;
 }
 
+static void install_grabs()
+{
+	if(!_windowed_mouse->value) {
+		SDL_WM_GrabInput(SDL_GRAB_ON);
+		SDL_ShowCursor(0);
+	}
+}
+
+static void uninstall_grabs()
+{
+	if(!_windowed_mouse->value) {
+		SDL_WM_GrabInput(SDL_GRAB_OFF);
+		SDL_ShowCursor(1);
+	}
+}
 
 static void IN_DeactivateMouse( void ) 
 { 
@@ -115,7 +130,7 @@ static void IN_DeactivateMouse( void )
 		return;
 
 	if (mouse_active) {
-		/* uninstall_grabs(); */
+		uninstall_grabs();
 		mouse_active = false;
 	}
 }
@@ -127,7 +142,7 @@ static void IN_ActivateMouse( void )
 
 	if (!mouse_active) {
 		mx = my = 0; // don't spazz
-		/* install_grabs(); */
+		install_grabs();
 		mouse_active = true;
 	}
 }
@@ -465,6 +480,9 @@ static qboolean SDLimp_InitGraphics( qboolean fullscreen )
 
 	SDL_WM_SetCaption(APPLICATION, APPLICATION);
 
+	/* always grab input in fullscreen mode */
+	if(fullscreen)
+		SDL_WM_GrabInput(SDL_GRAB_ON);
 	SDL_ShowCursor(0);
 
 #ifndef GL_QUAKE
@@ -662,18 +680,21 @@ void HandleEvents(void)
 		if (SDL_BUTTON(7) & bstate)
 			mouse_buttonstate |= (1 << 4);
 		
-		if(!_windowed_mouse)
-			_windowed_mouse = Cvar_Get("_windowed_mouse", "1", CVAR_ARCHIVE);
+		/* do _windowed_mouse only in non-fullscreen mode */
+		if(!vid_fullscreen->value) {
+			if(!_windowed_mouse)
+				_windowed_mouse = Cvar_Get("_windowed_mouse", "0", CVAR_ARCHIVE);
 
-		if (old_windowed_mouse != _windowed_mouse->value) {
-			old_windowed_mouse = _windowed_mouse->value;
+			if (old_windowed_mouse != _windowed_mouse->value) {
+				old_windowed_mouse = _windowed_mouse->value;
 
-			if (!_windowed_mouse->value) {
-				/* ungrab the pointer */
-				SDL_WM_GrabInput(SDL_GRAB_OFF);
-			} else {
-				/* grab the pointer */
-				SDL_WM_GrabInput(SDL_GRAB_ON);
+				if (!_windowed_mouse->value) {
+					/* ungrab the pointer */
+					SDL_WM_GrabInput(SDL_GRAB_OFF);
+				} else {
+					/* grab the pointer */
+					SDL_WM_GrabInput(SDL_GRAB_ON);
+				}
 			}
 		}
 		IN_MouseEvent();
